@@ -1,0 +1,18 @@
+.body {
+	width: 100%;
+	height: 100%;
+	background-color: gray !important;
+}
+
+/*	Probably not mobile friendly.
+	Uneven because we want a center point */
+.window {
+	position: fixed;
+	width: 601px;
+	height: 601px;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	background-color: black !important;
+	border: solid 1px silver;
+}
