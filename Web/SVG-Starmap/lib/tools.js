@@ -1,17 +1,14 @@
 'use strict';
 
 function Prng(seed) {
-    var m = Math.pow(2, 31)
-    var multi = 36969
-    var incr = 18000
-    var state = 0
-
-    function setState(seed) {state = seed/(Math.pow(2, 31)-1);}
-    setState(seed);
+    var multi = 16807;
+    var mod = 2147483647;
+    var incr = mod/multi;
+    var state = seed;
 
     this.lcg = function() {
-        state = (multi * state + incr) % m;
-        return state / (m-1);
+        state = (state * multi + incr) % mod;
+        return state / (mod-1);
     }
 };
 

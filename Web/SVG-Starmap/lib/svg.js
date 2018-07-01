@@ -1,6 +1,30 @@
 'use strict';
 function SvgObj() {
 
+	var radius = 0;
+	var svg = {
+		'size': {'x': 0, 'y': 0},
+		'center': {'x': 0, 'y': 0}
+	}
+	var div = {
+		size: {'x': 0, 'y': 0},
+		center: {'x': 0, 'y': 0}
+	}
+	var transformMatrix = [];
+	var svgMapNode = "";
+
+
+    function getRadius(stars) {
+        // loop through the stars and determine the size of the galaxy
+        var largest = 0
+        for (var i = 0; i < Object.keys(stars).length; i++) {
+            var star = stars[i]
+            if (Math.abs(star.x) > largest) {largest = Math.abs(star.x);}
+            if (Math.abs(star.y) > largest) {largest = Math.abs(star.y);}
+        }
+        return largest;  
+    }
+
 	/**
 	 * https://stackoverflow.com/questions/30940609/interacting-with-a-svg-image
 	 * Creates a box to display the universe in
@@ -8,19 +32,37 @@ function SvgObj() {
 	 * @param {integer} size The radius of the generated universe.
 	 * @return {boolean}      returns true on success, false otherwise
 	 */
-	this.createUniverseBox = function(node, radius) {
+	function createUniverseBox(node) {
 		if (!node) { return false; }
-		// Get the height & width of the box
-		var height = node.clientHeight;
-		var width = node.clientWidth;
-		// Convert the radius into a square
-		var side = parseInt(((radius+20)*2)+1);
-		var boxOff = radius-20;
 		// Clear the innerHTML of the node
 		node.innerHTML = "";
 		// attach the inline SVG
-		node.innerHTML = '<svg id="viewbox" width="'+width+'" height="'+height+'" viewbox="'+boxOff+' '+boxOff+' '+side+' '+side+'" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve"></svg>'
-		//node.innerHTML = '<svg id="viewbox" width="'+width+'" height="'+height+'" viewbox="0 0 '+side+' '+side+'" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve"></svg>'
+		node.innerHTML = '<svg id="viewbox" width="'+div.size.x+'" height="'+div.size.y+'" viewBox="'+-svg.center.x+' '+-svg.center.y+' '+svg.size.x+' '+svg.size.y+'" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve"></svg>'
+
+
+		transformMatrix = [1, 0, 0, 1, 0, 0];
+		svgMapNode = document.getElementById('viewbox');
+
+/*
+
+    <script type="text/javascript"><![CDATA[
+        var transformMatrix = [1, 0, 0, 1, 0, 0];
+        var svg = document.getElementById('viewbox-transformer');
+        var viewbox = document.getElementById('viewbox');
+        var centerX = 
+        parseFloat(viewbox[2]) / 2;
+        var centerY = parseFloat(viewbox[3]) / 2;
+        var matrixGroup = svg.getElementById("matrix-group");
+    ]]></script>
+
+		node.innerHTML = '<g id="viewbox-transformer" transform="matrix(1 0 0 1 0 0)">\
+							<svg id="viewbox" width="'+div.size.x+'" height="'+div.size.y+'" viewbox="'+-svg.center.x+' '+-svg.center.y+' '+svg.size.x+' '+svg.size.y+'" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve"></svg>\
+						  </g>'
+
+ */
+
+
+
 		return true;
 	}
 
@@ -29,18 +71,31 @@ function SvgObj() {
 	 * @param  {Objct} stars Contains star data
 	 * @return {boolean}       True on success
 	 */
-	this.fillUniverseBox = function(stars, radius) {
+	this.displayUniverse = function(stars) {
 		if (!stars) {console.log("svg.js - No stars found to plot."); return false;}
-		var node = document.getElementById("viewbox");
+		radius = parseInt(getRadius(stars));
+		svg.size.x = ((radius*2)+1000);
+		svg.size.y = svg.size.x;
+		svg.center.x = parseInt(svg.size.x/2)+1;
+		svg.center.y = parseInt(svg.size.y/2)+1;
+		
+		var node = document.getElementById("universe");
+		if (!node) {console.log("svg.js - The node with id 'universe' wasn't found."); return false;}
+		div.size.x = node.clientWidth;
+		div.size.y = node.clientHeight;
+		div.center.x = parseInt(div.size.x/2)+1;
+		div.center.y = parseInt(div.size.y/2)+1;
+		createUniverseBox(node);
+		
+		node = document.getElementById("viewbox");
 		if (!node) {console.log("svg.js - The node with id 'viewbox' wasn't found."); return false;}
+		var collector = "";
 		for (var i = 0; i < Object.keys(stars).length; i++) {
 			var star = stars[i];
-			var id = star.id;
-			var X = star.x+(radius*2)+1;
-			var Y = star.y+(radius*2)+1;
-			var color = star.data.color;
-			node.innerHTML += '<circle cx="'+X+'" cy="'+Y+'" r="2" fill="'+color+'" />'
+			//collector += '<circle id="'+star.id+'" cx="'+star.x+'" cy="'+star.y+'" r="'+star.data.size+'" fill="'+star.data.color+'" />'
+		collector += '<circle id="'+star.id+'" cx="'+star.x+'" cy="'+star.y+'" r="5" fill="'+star.data.color+'" />'
 		}
+		node.innerHTML = collector;
 		return true;
 	}
 

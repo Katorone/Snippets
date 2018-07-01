@@ -4,8 +4,7 @@ var UniverseHandler = function() {
 	var instance = {
 		Universe: {},
 		stars: {},
-		radius: 0,
-		Svg: {}
+		Svg: {},
 	}
 
 	/**
@@ -13,12 +12,11 @@ var UniverseHandler = function() {
 	 * @return {boolean} returns true on success
 	 */
 	instance.init = function() {
-		this.Universe = new UniverseObj(800);
+		//this.Universe = new UniverseObj(800);
+		this.Universe = new Galaxy(10);
 		this.Svg = new SvgObj();
-		this.radius = this.Universe.getSize();
-		this.Svg.createUniverseBox(document.getElementById('universe'), this.radius);
 		this.stars = this.Universe.getStars()
-		this.Svg.fillUniverseBox(this.stars, this.radius)
+		this.Svg.displayUniverse(this.stars)
 		return true;
 	}
 
