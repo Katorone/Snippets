@@ -13,12 +13,12 @@ var UniverseHandler = function() {
 	 * @return {boolean} returns true on success
 	 */
 	instance.init = function() {
-		this.Universe = new UniverseObj(504);
+		this.Universe = new UniverseObj(800);
 		this.Svg = new SvgObj();
 		this.radius = this.Universe.getSize();
 		this.Svg.createUniverseBox(document.getElementById('universe'), this.radius);
 		this.stars = this.Universe.getStars()
-		this.Svg.fillUniverseBox(this.stars)
+		this.Svg.fillUniverseBox(this.stars, this.radius)
 		return true;
 	}
 
